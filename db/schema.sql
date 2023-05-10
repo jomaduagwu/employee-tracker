@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS employees_db;
-CREATE DATABASE employees_db;
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db;
 
-USE employees_db;
+USE employee_db;
 
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -23,10 +23,12 @@ CREATE TABLE employee (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT,
-  manager_id INT,
+  manager_id INT DEFAULT NULL,
   FOREIGN KEY (role_id)
   REFERENCES role(id)
+  FOREIGN KEY (manager_id)
+  REFERENCES employee(id)
   ON DELETE SET NULL
---   manager_id to hold referencce to another employee that is the manager of the 
+--   manager_id to hold reference to another employee that is the manager of the 
 -- current employee (null if the employee has no manager)
 );
