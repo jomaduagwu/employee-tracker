@@ -6,9 +6,177 @@ const mysql = require('mysql2');
 // create the connection to database
 const connection = mysql.createConnection({
   host: 'localhost',
+  port: '3001',
   user: 'root',
-  database: 'test'
+  password: 'ekojonwa23',
+  database: 'employee_db'
 });
+
+
+// connect to the database
+// connection.connect((err) => {
+//   if (err) throw err;
+//   console.log("Connected to the database");
+// });
+
+// function to view all departments
+function viewAllDepartments() {
+  connection.query("SELECT * FROM departments", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    // prompt the user to choose an action
+    start();
+    // connection.end();
+  });
+}
+
+// function to view all roles
+function viewAllRoles() {
+  connection.query(
+    `SELECT role.id, role.title, department.name AS department, role.salary
+    FROM role
+    LEFT JOIN department ON roles.department_id = department.id`,
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      // prompt the user to choose an action
+      start();
+      // connection.end();
+    }
+  );
+}
+
+// function to view all employees
+function viewAllEmployees() {
+  connection.query(
+    `SELECT employee.id, employee.first_name, employee.last_name, role.title AS title, department.name AS department, role.salary AS salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+    FROM employee
+    LEFT JOIN role ON employee.role_id = role.id
+    LEFT JOIN department ON role.department_id = department.id
+    LEFT JOIN employee AS manager ON employee.manager_id = manager.id`,
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      // prompt the user to choose an action
+      start();
+      // connection.end();
+    }
+  );
+}
+
+// function to add a department
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter the name of the department:"
+      }
+    ])
+    .then((answer) => {
+      connection.query(
+        "INSERT INTO department SET ?",
+        { name: answer.name },
+        (err, res) => {
+          if (err) throw err;
+          console.log(`${res.affectedRows} department added!\n`);
+          // prompt the user to choose an action
+          start();
+          // connection.end();
+        }
+      );
+    });
+}
+
+// function to add a role
+function addRole() {
+  connection.query("SELECT * FROM departments", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "title",
+          message: "Enter the title of the role:"
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: "Enter the salary of the role:"
+        },
+        {
+          type: "list",
+          name: "department",
+          message: "Choose the department:",
+          choices: res.map((department) => ({
+            name: department.name,
+            value: department.id
+          }))
+        }
+      ])
+      .then((answer) => {
+        connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.title,
+            salary: answer.salary,
+            department_id: answer.department
+          },
+          (err, res) => {
+            if (err) throw err;
+            console.log(`${res.affectedRows} role added!\n`);
+            connection.end();
+          });
+        });
+      });
+
+// Function to add an employee
+function addEmployee() {
+  inquirer.prompt([
+    {
+      name: 'first_name',
+      type: 'input',
+      message: 'Enter the employee\'s first name:'
+    },
+    {
+      name: 'last_name',
+      type: 'input',
+      message: 'Enter the employee\'s last name:'
+    },
+    {
+      name: 'role_id',
+      type: 'number',
+      message: 'Enter the employee\'s role id:'
+    },
+    {
+      name: 'manager_id',
+      type: 'number',
+      message: 'Enter the employee\'s manager id:'
+    }
+  ]).then(answer => {
+    connection.query('INSERT INTO role SET?', answer, (err, res) => {
+      if (err) throw err;
+      console.log('Employee has been added');
+      connection.end();
+    });
+  });
+}
+
+
+
+
+
+
+
+
+
+
+// .promise() function on Connections, to "upgrade" an 
+//  existing non-promise connection to use promise
+connection.promise().query("SELECT 1")
+  .then( ([rows,fields]) => {
+    console.log(rows);
 
 const questions = [
     {
@@ -83,11 +251,6 @@ const questions = [
     );
   });
 
-// .promise() function on Connections, to "upgrade" an 
-//  existing non-promise connection to use promise
-con.promise().query("SELECT 1")
-  .then( ([rows,fields]) => {
-    console.log(rows);
   })
   .catch(console.log)
-  .then( () => con.end());
+  .then( () => connection.end());
