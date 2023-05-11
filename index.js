@@ -2,26 +2,31 @@ const inquirer = require(inquirer);
 const fs = require('fs');
 // get the client
 const mysql = require('mysql2');
+// require console.table to show table
+const cTable = require('console.table');
+// require('dotenv').config();
 
 // create the connection to database
 const connection = mysql.createConnection({
   host: 'localhost',
-  port: '3001',
+  // port: '3001',
   user: 'root',
   password: 'ekojonwa23',
+  // password: process.env.db_password, need to change password
   database: 'employee_db'
 });
 
 
 // connect to the database
-// connection.connect((err) => {
-//   if (err) throw err;
-//   console.log("Connected to the database");
-// });
+connection.connect((err) => {
+  if (err) throw err;
+  console.log("Connected to the database"); //console.log('connected as id' + connection.threadId);
+  startPrompt(); // need a function to start up the questions
+});
 
 // function to view all departments
 function viewAllDepartments() {
-  connection.query("SELECT * FROM departments", (err, res) => {
+  connection.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
     console.table(res);
     // prompt the user to choose an action
@@ -183,8 +188,17 @@ const questions = [
       type: 'list',
       name: 'action',
       message: 'What would you like to do?',
-      choices: ['View All Employees', 'Add Employee', 'View All Roles',
-    'Add Role', 'View All Departments', 'Add Department',  'Update  an Employee Role'],
+      choices: ['View All Employees',            
+                'View All Roles',
+                'View All Departments',
+                'Add Employee',
+                'Add Role',                 
+                'Add Department',  
+                'Update  an Employee Role',
+                'Update an Employee Manager',
+                'Delete an Employee',
+                'Delete a Role',
+                'Delete a Department'],
     },
     {
       type: 'input',
