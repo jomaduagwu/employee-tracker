@@ -1,17 +1,18 @@
-const inquirer = require(inquirer);
-const fs = require('fs');
+const inquirer = require('inquirer');
+const fs = require('fs'); // needed?
 // get the client
 const mysql = require('mysql2');
 // require console.table to show table
-const cTable = require('console.table');
-// require('dotenv').config();
+// const cTable = require('console.table');
+require('dotenv').config(); // needed?
+console.log(process.env);
 
 // create the connection to database
 const connection = mysql.createConnection({
   host: 'localhost',
-  // port: '3001',
+  port: '3306',
   user: 'root',
-  password: 'ekojonwa23',
+  password: 'password', //process.env.DB_PASSWORD
   // password: process.env.db_password, need to change password
   database: 'employee_db'
 });
@@ -268,3 +269,4 @@ const questions = [
   })
   .catch(console.log)
   .then( () => connection.end());
+}
