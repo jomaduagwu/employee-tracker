@@ -26,7 +26,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 
 ## Description
-  This application was created to -------.  
+  This is a command-line application built to manage a company's employee database using Node.js, Inquirer, and MySQL. It functions as a Content Management System for non-developers to easily view and interact with information stored in the database from the terminal.
 
 
 ## Table of Contents
@@ -39,16 +39,16 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 
   ## Installation
-  Clone the respository from the repo in GitHub. Make sure you install Node.js and NPM on your computer. You will need to install the node package manager (NPM) using `npm init` and then the inquirer v8.2.4 module using `npm i inquirer@8.2.4`. Use `npm install` to install dependencies, and `npm install --save-dev-jest` to install Jest as a devDependency. 
-install `npm install --save mysql2`
- `npm i inquirer@8.2.4`
+  Clone the respository from the repo in GitHub. Make sure you install Node.js and NPM on your computer. You will need to install the node package manager (NPM) using `npm init` and then the inquirer v8.2.4 module using `npm i inquirer@8.2.4`. Use `npm install` to install required dependencies.
 
   ## Usage
-  You can find the walkthrough video here - [employee tracker walkthrough video](https://drive.google.com/file/d/)
+  You can find the walkthrough video here - [employee tracker walkthrough video](https://drive.google.com/file/d/1vxcHDMJm1OJ5c01pVSzB7RfBjPI2XITW/view?usp=share_link)
+  
+  ![employee tracker screenshot](./assets/Employee_Tracker_screenshot.png)
 
-  Start by opening the file in the terminal. Type `node index.js` and answer the series of questions 
+  Start by opening the file in the terminal. Run `mysql -u root -p` to initialize MySQL, then type password to login. Type `source db/schema.sql` and `source db/seeds.sql` to load the database and then `quit`. Run `npm start` and then select an option from the menu prompt. Follow the prompts for each selection. Select `Exit` to quit the application. 
 
-  ![employee tracker video](./assets/.gif)
+  ![employee tracker video](./assets/employee_tracker.gif)
 
 
 
