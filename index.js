@@ -1,11 +1,9 @@
 const inquirer = require('inquirer');
-const fs = require('fs'); // needed?
-// get the client
+const fs = require('fs');
 const mysql = require('mysql2');
-// require console.table to show table
 const cTable = require('console.table');
 const { connect } = require('http2');
-require('dotenv').config(); // needed?
+require('dotenv').config(); 
 console.log(process.env);
 
 // create the connection to database
@@ -21,20 +19,9 @@ const connection = mysql.createConnection({
 // connect to the database
 connection.connect((err) => {
   if (err) throw err;
-  console.log("Connected to the database"); //console.log('connected as id' + connection.threadId);
+  console.log("Connected to the database"); 
   start(); 
 });
-
-
-
-
-// .promise() function on Connections, to "upgrade" an 
-//  existing non-promise connection to use promise
-// connection.promise().query("SELECT 1")
-//   .then( ([rows,fields]) => {
-//     console.log(rows);
-
-// });
 
 const start = () => {
   inquirer
@@ -112,7 +99,6 @@ function viewAllDepartments() {
     err ? console.error(err) : console.table(res);
     // prompt the user to choose an action
     start();
-    // connection.end();
   });
 }
 
@@ -124,7 +110,6 @@ function viewAllRoles() {
     LEFT JOIN department ON role.department_id = department.id`,
     (err, res) => {
       err ? console.error(err) : console.table(res);
-      
       // prompt the user to choose an action
       start();
       
@@ -142,8 +127,6 @@ function viewAllEmployees() {
     LEFT JOIN employee AS manager ON employee.manager_id = manager.id`,
     (err, res) => {
       err ? console.error(err) : console.table(res);
-        // if (err) throw err;
-      // console.table(res);
       // prompt the user to choose an action
       start();
     }
@@ -216,6 +199,7 @@ function addRole() {
         });
       });
     };
+
 // Function to add an employee
 function addEmployee() {
   inquirer
@@ -400,8 +384,7 @@ function viewEmployeesByDepartment() {
         WHERE d.name = ?
       `;
       connection.query(query, [department], (err, res) => {
-        err ? console.error(err) : console.table(res);
-        
+        err ? console.error(err) : console.table(res); 
         start(); // Prompt the user to choose an action again
       });
     });
@@ -427,8 +410,7 @@ function viewDepartmentBudget() {
         GROUP BY d.name
       `;
       connection.query(query, [department], (err, res) => {
-        err ? console.error(err) : console.table(res);
-        
+        err ? console.error(err) : console.table(res);     
         start(); 
       });
     });
