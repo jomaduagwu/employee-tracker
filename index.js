@@ -22,7 +22,7 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) throw err;
   console.log("Connected to the database"); //console.log('connected as id' + connection.threadId);
-  start(); // need a function to start up the questions
+  start(); 
 });
 
 
@@ -34,7 +34,7 @@ connection.connect((err) => {
 //   .then( ([rows,fields]) => {
 //     console.log(rows);
 
-//   });
+// });
 
 const start = () => {
   inquirer
@@ -49,7 +49,7 @@ const start = () => {
                 'Add New Role',                 
                 'Add New Employee',  
                 'Update an Employee Role',
-                // 'Update an Employee Manager',
+                'Update an Employee Manager',
                 'Delete an Employee',
                 'Delete a Role',
                 'Delete a Department',
@@ -96,6 +96,9 @@ const start = () => {
           case 'View Total Utilized Budget by Department':
             viewDepartmentBudget();
             break;
+            case 'Update an Employee Manager':
+              updateEmployeeManager();
+              break;
           case 'Exit':
             connection.end();
             break;        
@@ -107,8 +110,6 @@ const start = () => {
 function viewAllDepartments() {
   connection.query("SELECT * FROM department", (err, res) => {
     err ? console.error(err) : console.table(res);
-    // if (err) throw err;
-    // console.table(res);
     // prompt the user to choose an action
     start();
     // connection.end();
@@ -123,11 +124,10 @@ function viewAllRoles() {
     LEFT JOIN department ON role.department_id = department.id`,
     (err, res) => {
       err ? console.error(err) : console.table(res);
-      // if (err) throw err;
-      // console.table(res);
+      
       // prompt the user to choose an action
       start();
-      // connection.end();
+      
     }
   );
 }
@@ -142,11 +142,10 @@ function viewAllEmployees() {
     LEFT JOIN employee AS manager ON employee.manager_id = manager.id`,
     (err, res) => {
       err ? console.error(err) : console.table(res);
-      // if (err) throw err;
+        // if (err) throw err;
       // console.table(res);
       // prompt the user to choose an action
       start();
-      // connection.end();
     }
   );
 }
@@ -167,11 +166,9 @@ function addDepartment() {
         { name: answer.addDept},
         (err, res) => {
           err ? console.error(err) : console.table(`${res.affectedRows} department added!\n`);
-          // if (err) throw err;
-          // console.log(`${res.affectedRows} department added!\n`);
           // prompt the user to choose an action
           start();
-          // connection.end();
+          
         }
       );
     });
@@ -213,9 +210,7 @@ function addRole() {
           },
           (err, res) => {
             err ? console.error(err) : console.table(`${res.affectedRows} role added!\n`);
-            // if (err) throw err;
-            // console.log(`${res.affectedRows} role added!\n`);
-            // connection.end();
+          
             start();
           });
         });
@@ -255,9 +250,7 @@ function addEmployee() {
       },
       (err, res) => {
         err ? console.error(err) : console.log('Employee has been added');
-        // if (err) throw err;
-        // console.log('Employee has been added');
-        // connection.end();
+      
         start();
     });
   });
@@ -290,8 +283,7 @@ function updateEmployee () {
           [answer.newRoleId, answer.employeeToUpdate],
           (err, res) => {
             err ? console.error(err) : console.log("Employee role updated successfully!\n");
-            // if (err) throw err;
-            // console.log("Employee role updated successfully!\n");
+            
             start();
           }
         );
@@ -321,8 +313,7 @@ function deleteEmployee () {
           answer.employeeToDelete,
           (err, res) => {
             err ? console.error(err) : console.log("Employee deleted successfully!\n");
-            // if (err) throw err;
-            // console.log("Employee deleted successfully!\n");
+          
             start();
           }
         );
@@ -352,8 +343,7 @@ function deleteRole () {
           answer.roleToDelete,
           (err, res) => {
             err ? console.error(err) : console.log("Role deleted successfully!\n");
-            // if (err) throw err;
-            // console.log("Role deleted successfully!\n");
+            
             start();
           }
         );
@@ -383,8 +373,7 @@ function deleteDepartment () {
           answer.departmentToDelete,
           (err, res) => {
             err ? console.error(err) : console.log("Department deleted successfully!\n");
-            // if (err) throw err;
-            // console.log("Department deleted successfully!\n");
+            
             start();
           }
         );
@@ -412,8 +401,7 @@ function viewEmployeesByDepartment() {
       `;
       connection.query(query, [department], (err, res) => {
         err ? console.error(err) : console.table(res);
-        // if (err) throw err;
-        // console.table(res);
+        
         start(); // Prompt the user to choose an action again
       });
     });
@@ -440,12 +428,47 @@ function viewDepartmentBudget() {
       `;
       connection.query(query, [department], (err, res) => {
         err ? console.error(err) : console.table(res);
-        // if (err) throw err;
-        // console.table(res);
+        
         start(); 
       });
     });
 }
 
-
+// BONUS function to update an employee's manager
+function updateEmployeeManager() {
+  connection.query("SELECT * FROM employee", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employeeToUpdate",
+          message: "Select an employee to update:",
+          choices: res.map((employee) => ({
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id
+          }))
+        },
+        {
+          type: "list",
+          name: "newManagerId",
+          message: "Select the new manager for the employee:",
+          choices: res.map((employee) => ({
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id
+          }))
+        }
+      ])
+      .then((answer) => {
+        connection.query(
+          "UPDATE employee SET manager_id = ? WHERE id = ?",
+          [answer.newManagerId, answer.employeeToUpdate],
+          (err, res) => {
+            err ? console.error(err) : console.log("Employee manager updated successfully!\n");
+            start();
+          }
+        );
+      });
+  });
+}
 
